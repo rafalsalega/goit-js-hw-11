@@ -8,13 +8,15 @@ const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
 const input = document.querySelector('input');
 const imagesPerPage = 40;
+const loader = document.querySelector('.load-more');
 
 
 let i = 1;
-let end = null;
+let end = null; 
 let inputQuery = null;
 
 form.addEventListener('submit', handleSubmit);
+loader.addEventListener('click', loadMoreImages);
 
 const fetchPictures = async (name, page = 1) => {
     const table = await axios.get(
@@ -28,25 +30,22 @@ var lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
 });
 
-function handleSubmit(event) {
-  event.preventDefault();
-  inputQuery = input.value;
-  i = 1;
-  end = false;
-  gallery.innerHTML = '';
-  fetchPictures(inputQuery)
+
+function loadMoreImages() {
+  i++;
+  fetchPictures(inputQuery, i)
     .then(function (response) {
       // handle success
-      if (response.data.hits.length === 0) {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-        return;
-      }
       renderImages(response);
-      Notiflix.Notify.success(
-        `Hooray! We found ${response.data.totalHits} images.`
-      );
+      if (
+        imagesPerPage * i >= response.data.totalHits &&
+        response.data.totalHits !== 0
+      ) {
+        end = true;
+        Notiflix.Notify.warning(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
     })
     .catch(function (error) {
       // handle error
@@ -70,6 +69,7 @@ function handleSubmit(event) {
         return;
       }
       renderImages(response);
+      loader.classList.remove('hidden')
       Notiflix.Notify.success(
         `Hooray! We found ${response.data.totalHits} images.`)
     })
@@ -101,7 +101,10 @@ function renderImages(response) {
 </div>`
     )
     .join('');
+
   gallery.insertAdjacentHTML('beforeend', markupList);
   lightbox.refresh();
 }
+
+
 
