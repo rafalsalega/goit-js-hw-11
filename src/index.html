@@ -16,14 +16,11 @@
           placeholder="Search images..."
         />
         <button type="submit" class="submit">
-          <img
-            class="search"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Search_ballonicon2.svg/100px-Search_ballonicon2.svg.png"
-          />
+          <svg class="search">
+            <use href="./images/symbol-defs.svg#icon-search"></use>
+          </svg>
         </button>
       </form>
-
-
     <div class="gallery"></div>
     <button class="load-more hidden">Load More</button>
     <script src="index.js" type="module"></script>
